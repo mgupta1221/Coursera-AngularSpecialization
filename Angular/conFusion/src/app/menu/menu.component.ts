@@ -58,7 +58,7 @@ export class MenuComponent implements OnInit {
   selectedDish = DISHES[0];
 
   constructor() {
-    // this.dishes = [];
+    
   }
 
   ngOnInit(): void {
