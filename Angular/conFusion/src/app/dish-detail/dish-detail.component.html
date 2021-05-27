@@ -23,8 +23,8 @@
     </div>
 
     <div fxFlex="40">
-        <h2>Comments</h2>
         <mat-list *ngIf="dish">
+            <h2>Comments</h2>
             <mat-list-item *ngFor="let comment of dish.comments">
                 <h4 matLine>{{comment.comment}}</h4>
                 <p matLine class="demo-2"> {{comment.rating}} Stars </p>
