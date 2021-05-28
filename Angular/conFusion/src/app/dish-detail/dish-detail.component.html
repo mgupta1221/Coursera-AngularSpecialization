@@ -1,14 +1,9 @@
-<div class="container"
-    fxLayout="row wrap"
-    fxLayout.sm="column"
-    fxLayout.xs="column"
-    fxLayoutAlign.gt-md="space-around center"
-    fxLayoutGap="10px" 
-    fxLayoutGap.xs="0">
+<div class="container" fxLayout="row wrap" fxLayout.sm="column" fxLayout.xs="column"
+    fxLayoutAlign.gt-md="space-around center" fxLayoutGap="10px" fxLayoutGap.xs="0">
 
     <div fxFlex="40" *ngIf="dish">
         <div fxFlex>
-            <mat-card >
+            <mat-card>
                 <mat-card-header>
                     <mat-card-title>
                         <h3 *ngIf="dish">{{dish.name | uppercase}}</h3>
@@ -20,10 +15,12 @@
                     </p>
                 </mat-card-content>
                 <mat-card-actions>
-                    <button mat-button [routerLink]="['/dishdetail', prev]"><span class="fa fa-chevron-left fa-lg"></span></button>
+                    <button mat-button [routerLink]="['/dishdetail', prev]"><span
+                            class="fa fa-chevron-left fa-lg"></span></button>
                     <span class="flex-spacer"></span>
-                    <button mat-button [routerLink]="['/dishdetail', next]"><span class="fa fa-chevron-right fa-lg"></span></button>
-    
+                    <button mat-button [routerLink]="['/dishdetail', next]"><span
+                            class="fa fa-chevron-right fa-lg"></span></button>
+
                     <button mat-button (click)="goBack()">BACK</button>
                     <button mat-button>LIKE</button>
                     <button mat-button>SHARE</button>
@@ -32,7 +29,7 @@
         </div>
     </div>
 
-    <div fxFlex="40"  *ngIf="dish">
+    <div fxFlex="40" *ngIf="dish">
         <mat-list>
             <h2>Comments</h2>
             <mat-list-item *ngFor="let comment of dish.comments">
@@ -42,6 +39,46 @@
             </mat-list-item>
 
         </mat-list>
+        <mat-list [hidden]="!cform.valid">
+            <mat-list-item>
+                <p matLine>{{ commentForm.value.comment }}</p>
+                <p matLine> {{ cform.valid ? commentForm.value.rating + ' Stars!':'' }} </p>
+                <p matLine>
+                    {{ cform.valid ?"-- "+ commentForm.value.author:'' }}
+            </mat-list-item>
+        </mat-list>
+
+        <form novalidate [formGroup]="commentForm" #cform="ngForm" (ngSubmit)="onSubmit()">
+
+            <p>
+                <mat-form-field class="half-width" [style.width.px]=350>
+                    <input matInput formControlName="author" placeholder="Name" type="text" required>
+                    <mat-error *ngIf="formErrors.author">{{formErrors.author}}</mat-error>
+                </mat-form-field>
+            </p>
+
+            <p>
+                <mat-slider thumbLabel class="slider" formControlName="rating" tickInterval="1" min="1" max="5"
+                    step="1"></mat-slider>
+            </p>
+
+            <table class="form-size">
+                <td>
+                    <mat-form-field class="full-width" [style.width.px]=350>
+                        <textarea matInput formControlName="comment" placeholder="Your Comment" cols=30 rows=12
+                            required></textarea>
+                        <mat-error *ngIf="formErrors.comment">{{formErrors.comment}}</mat-error>
+                    </mat-form-field>
+                </td>
+            </table>
+
+            <button type="submit" mat-button class="background-primary text-floral-white"
+                [disabled]="!cform.valid">Submit</button>
+        </form>
+
+
+
+
     </div>
 
     <div [hidden]="dish">
