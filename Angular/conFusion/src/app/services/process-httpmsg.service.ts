@@ -8,7 +8,7 @@ import { HttpErrorResponse } from '@angular/common/http';
 export class ProcessHTTPMsgService {
 
   constructor() { }
-  
+
   public handleError(error: HttpErrorResponse | any) {
     let errMsg: string;
 
@@ -16,8 +16,7 @@ export class ProcessHTTPMsgService {
       errMsg = error.error.message;
     } else {
       errMsg = `${error.status} - ${error.statusText || ''} ${error.error}`;
-    }
-
+    }    
     return throwError(errMsg);
   }
 }

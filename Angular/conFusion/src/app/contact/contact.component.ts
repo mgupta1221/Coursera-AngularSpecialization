@@ -1,6 +1,7 @@
-import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { FormBuilder, FormGroup, NgForm, Validators } from '@angular/forms';
-import { flyInOut } from '../animations/app.animation';
+import { expand, flyInOut } from '../animations/app.animation';
+import { FeedbackService } from '../services/feedback.service';
 import { Feedback, ContactType } from '../shared/feedback';
 
 @Component({
@@ -10,16 +11,23 @@ import { Feedback, ContactType } from '../shared/feedback';
   host: {
     '[@flyInOut]': 'true',
     'style': 'display: block;'
-    },
-    animations: [
-      flyInOut()
-    ]
+  },
+  animations: [
+    flyInOut(),
+    expand()
+  ]
 })
 export class ContactComponent implements OnInit {
 
   feedbackForm: FormGroup;
   feedback: Feedback;
+  submittedFeedback: Feedback;
   contactType = ContactType;
+  errMess: string;
+  showForm = true;
+  showLoader = false
+  showDetailForm = false;
+  expand = 'enter';
 
   formErrors: any = {
     'firstname': '',
@@ -51,7 +59,7 @@ export class ContactComponent implements OnInit {
 
   @ViewChild('fform', { read: NgForm }) feedbackFormDirective: any;
 
-  constructor(private fb: FormBuilder) {
+  constructor(private fb: FormBuilder, private feedbackService: FeedbackService) {
     this.createForm();
   }
 
@@ -76,7 +84,6 @@ export class ContactComponent implements OnInit {
   }
 
   onValueChanged(data?: any) {
-    debugger
     if (!this.feedbackForm) { return; }
     const form = this.feedbackForm;
     for (const field in this.formErrors) {
@@ -98,17 +105,40 @@ export class ContactComponent implements OnInit {
 
   onSubmit() {
     this.feedback = this.feedbackForm.value;
-    console.log(this.feedback);
-    this.feedbackForm.reset({
-      firstname: '',
-      lastname: '',
-      telnum: '',
-      email: '',
-      agree: false,
-      contacttype: 'None',
-      message: ''
-    });
-    this.feedbackFormDirective.resetForm();
+    //This line below will start the spinner and hide the original form
+    this.showForm = false;
+    this.showLoader = true;
+    this.showDetailForm = false;
+
+    this.feedbackService.submitFeedback(this.feedback)
+      .subscribe(feedback => {
+
+        //setting the returned values back for the display form
+        this.submittedFeedback = feedback;
+        this.showLoader = false;
+        this.showDetailForm = true;
+
+        setTimeout(() => {
+          //This will hide the detail view and show the blank original form after 5 secs
+          this.showDetailForm = false;
+          this.showForm = true;
+
+          //resetting form
+          this.feedbackForm.reset({
+            firstname: '',
+            lastname: '',
+            telnum: '',
+            email: '',
+            agree: false,
+            contacttype: 'None',
+            message: ''
+          });
+          this.feedbackFormDirective.resetForm();
+        }, 5000);
+      },
+        errMess => { this.feedback = null as any; this.errMess = <any>errMess; });
+
+
   }
 
 }
